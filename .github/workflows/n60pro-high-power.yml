@@ -34,21 +34,12 @@ jobs:
             qemu-utils re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl \
             unzip vim wget xmlto xxd zlib1g-dev zstd
 
-      - name: Prepare N60 Pro high-power config only
+      - name: Prepare high-power config
         shell: bash
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           cp defconfig/nx60pro-ipailna-high-power.config .config
-          sed -i \
-            -e '/^CONFIG_TARGET_MULTI_PROFILE=/c\# CONFIG_TARGET_MULTI_PROFILE is not set' \
-            -e '/^CONFIG_TARGET_DEVICE_mediatek_mt7986_DEVICE_/d' \
-            -e '/^CONFIG_TARGET_DEVICE_PACKAGES_mediatek_mt7986_DEVICE_/d' \
-            .config
-          cat >> .config <<'EOF'
-          CONFIG_TARGET_DEVICE_mediatek_mt7986_DEVICE_netcore_n60-pro=y
-          CONFIG_TARGET_DEVICE_PACKAGES_mediatek_mt7986_DEVICE_netcore_n60-pro=""
-          EOF
           make defconfig
           grep -E 'CONFIG_TARGET|netcore_n60-pro|mt_wifi|mtwifi|luci-app-mtwifi|turboacc-mtk' .config || true
 
