@@ -40,6 +40,16 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           cp defconfig/nx60pro-ipailna-high-power.config .config
+          sed -i \
+            -e '/^CONFIG_TARGET_DEVICE_mediatek_mt7986_DEVICE_/d' \
+            -e '/^CONFIG_TARGET_DEVICE_PACKAGES_mediatek_mt7986_DEVICE_/d' \
+            .config
+          cat >> .config <<'EOF'
+          CONFIG_TARGET_MULTI_PROFILE=y
+          CONFIG_TARGET_PER_DEVICE_ROOTFS=y
+          CONFIG_TARGET_DEVICE_mediatek_mt7986_DEVICE_netcore_n60-pro=y
+          CONFIG_TARGET_DEVICE_PACKAGES_mediatek_mt7986_DEVICE_netcore_n60-pro=""
+          EOF
           make defconfig
           grep -E 'CONFIG_TARGET|netcore_n60-pro|mt_wifi|mtwifi|luci-app-mtwifi|turboacc-mtk' .config || true
 
@@ -57,8 +67,7 @@ jobs:
             -name '*netcore*n60*pro*sysupgrade*.bin' -o \
             -name '*netcore_n60-pro*sysupgrade*.bin' -o \
             -name '*n60-pro*sysupgrade*.bin' -o \
-            -name '*n60pro*sysupgrade*.bin' -o \
-            -name '*sysupgrade*.bin' \
+            -name '*n60pro*sysupgrade*.bin' \
           \) -print -exec cp -v {} artifact/ \;
           if ! find artifact -maxdepth 1 -type f -name '*sysupgrade*.bin' | grep -q .; then
             echo "No sysupgrade.bin matched. Full bin/targets listing follows:"
