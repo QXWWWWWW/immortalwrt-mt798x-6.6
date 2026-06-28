@@ -37,9 +37,11 @@ jobs:
       - name: Prepare N60 Pro high-power config only
         shell: bash
         run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
           cp defconfig/nx60pro-ipailna-high-power.config .config
           sed -i \
-            -e '/^CONFIG_TARGET_MULTI_PROFILE=/c\CONFIG_TARGET_MULTI_PROFILE=n' \
+            -e '/^CONFIG_TARGET_MULTI_PROFILE=/c\# CONFIG_TARGET_MULTI_PROFILE is not set' \
             -e '/^CONFIG_TARGET_DEVICE_mediatek_mt7986_DEVICE_/d' \
             -e '/^CONFIG_TARGET_DEVICE_PACKAGES_mediatek_mt7986_DEVICE_/d' \
             .config
